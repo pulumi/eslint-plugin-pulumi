@@ -1,11 +1,11 @@
 {
   "name": "@pulumi/eslint-plugin",
-  "version": "0.1.0",
+  "version": "0.1.0-rc1",
   "description": "eslint plugin for pulumi",
   "main": "dist/index.js",
   "scripts": {
     "test": "jest",
-    "build": "tsup src/index.ts --no-splitting --minify",
+    "build": "tsup src/index.ts --no-splitting --minify --sourcemap --format esm,cjs",
     "lint": "eslint -c .eslintrc.js src/** tests/**",
     "format": "prettier --write ."
   },

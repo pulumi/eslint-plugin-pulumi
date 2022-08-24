@@ -1,0 +1,124 @@
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  LOCAL_PLAT: linux-amd64
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Checkout Scripts Repo
+        uses: actions/checkout@v2
+        with:
+          path: ci-scripts
+          repository: pulumi/scripts
+      - name: Unshallow clone for tags
+        run: git fetch --prune --unshallow --tags
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          registry-url: https://registry.npmjs.org
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint code
+        run: make lint
+      - name: Check worktree clean
+        run: ./ci-scripts/ci/check-worktree-is-clean
+  acceptance-test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Checkout Scripts Repo
+        uses: actions/checkout@v2
+        with:
+          path: ci-scripts
+          repository: pulumi/scripts
+      - name: Unshallow clone for tags
+        run: git fetch --prune --unshallow --tags
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{matrix.nodeversion}}
+          registry-url: https://registry.npmjs.org
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: make test
+      - name: Build SDK
+        run: make build
+      - name: Check worktree clean
+        run: ./ci-scripts/ci/check-worktree-is-clean
+      - name: Make tarball
+        run: npm pack
+      - name: Rename tarball
+        run: mv pulumi-eslint-plugin-$(jq -r .version < package.json).tgz pulumi-eslint-plugin.tgz
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: pulumi-eslint-plugin.tgz
+          path: ${{ github.workspace }}/pulumi-eslint-plugin.tgz
+    strategy:
+      fail-fast: false
+      matrix:
+        nodeversion:
+          - 16.x
+  publish:
+    name: publish
+    needs: acceptance-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Checkout Scripts Repo
+        uses: actions/checkout@v2
+        with:
+          path: ci-scripts
+          repository: pulumi/scripts
+      - name: Unshallow clone for tags
+        run: git fetch --prune --unshallow --tags
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          always-auth: true
+          registry-url: https://registry.npmjs.org
+          node-version: ${{matrix.nodeversion}}
+      - name: Download plugin
+        uses: actions/download-artifact@v2
+        with:
+          name: pulumi-eslint-plugin.tgz
+          path: ${{ github.workspace}}
+      - name: Rename plugin tarball
+        run: mv pulumi-eslint-plugin.tgz pulumi-eslint-plugin-$(jq -r .version < package.json).tgz
+      - env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        name: Publish Plugin
+        run: ./scripts/publish_plugin.sh
+    strategy:
+      fail-fast: false
+      matrix:
+        nodeversion:
+          - 16.x
+  tag:
+    name: tag
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Add plugin version tag
+        run: git tag v$(jq -r .version < package.json) && git push origin
+          v$(jq -r .version < package.json)
+name: release
+"on":
+  push:
+    tags:
+      - v*.*.*
+      - '!v*.*.*-**'
