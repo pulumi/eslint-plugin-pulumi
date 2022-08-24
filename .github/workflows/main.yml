@@ -61,8 +61,8 @@ jobs:
         with:
           node-version: ${{matrix.nodeversion}}
           registry-url: https://registry.npmjs.org
-      - name: Build Plugin
-        run: make build
+      - name: Install deps
+        run: npm ci
       - name: Build Tarball
         run: npm pack
       - name: Rename tarball
