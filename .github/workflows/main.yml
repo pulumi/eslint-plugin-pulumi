@@ -65,6 +65,8 @@ jobs:
           registry-url: https://registry.npmjs.org
       - name: Install deps
         run: npm ci
+      - name: Build dist
+        run: make dist
       - name: Build Tarball
         run: npm pack
       - name: Rename tarball
