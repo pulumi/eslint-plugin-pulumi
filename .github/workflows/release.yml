@@ -52,8 +52,8 @@ jobs:
         run: npm ci
       - name: Run tests
         run: make test
-      - name: Build SDK
-        run: make build
+      - name: Build Plugin
+        run: make dist
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Make tarball
