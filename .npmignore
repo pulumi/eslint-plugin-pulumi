@@ -1,3 +1,11 @@
 node_modules
 coverage
 ci-scripts
+*.tgz
+.github
+tests
+jest*
+scripts
+Makefile
+.eslint*
+.prettierrc
