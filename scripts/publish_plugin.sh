@@ -50,7 +50,7 @@ publish() {
     # We exploit the fact that `npm info <package-name>@<package-version>` has no output
     # when the package does not exist.
     if [ "$(npm info ${PKG_NAME}@${PKG_VERSION})" == "" ]; then
-        if ! npm publish -tag "${NPM_TAG}"; then
+        if ! npm publish pulumi-eslint-plugin-$(jq -r .version < package.json).tgz -tag "${NPM_TAG}"; then
             # if we get here, we have a TOCTOU issue, so check again
             # to see if it published. If it didn't bail out.
             if [ "$(npm info ${PKG_NAME}@${PKG_VERSION})" == "" ]; then
