@@ -1,5 +1,5 @@
 import { ESLintUtils } from "@typescript-eslint/utils";
-import rule from "../src/noOuputInstanceInTemplateLiterals";
+import rule from "../src/noOuputInstanceInTemplateLiteral";
 import { getFixturesRootDir } from "./utils";
 
 const rootDir = getFixturesRootDir();
