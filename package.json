@@ -1,6 +1,6 @@
 {
   "name": "@pulumi/eslint-plugin",
-  "version": "0.1.0-rc3",
+  "version": "0.2.0",
   "description": "eslint plugin for pulumi",
   "main": "dist/index.js",
   "scripts": {
