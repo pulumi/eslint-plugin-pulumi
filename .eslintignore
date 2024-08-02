@@ -1,5 +1,0 @@
-.eslintrc.js
-coverage/**/*
-jest.config.js
-dist/**/*
-jest-resolver.js

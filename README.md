@@ -43,8 +43,10 @@ Invalid:
 ```typescript
 import * as pulumi from "@pulumi/pulumi";
 
-const outputInstance: pulumi.OutputInstance<number> = pulumi.output([1, 2, 3])[0];
-const someInterpolatedString = `${outputInstance}`
+const outputInstance: pulumi.OutputInstance<number> = pulumi.output([
+  1, 2, 3,
+])[0];
+const someInterpolatedString = `${outputInstance}`;
 ```
 
 Valid:
@@ -52,10 +54,12 @@ Valid:
 ```typescript
 import * as pulumi from "@pulumi/pulumi";
 
-const outputInstance: pulumi.OutputInstance<number> = pulumi.output([1, 2, 3])[0];
-const someInterpolatedString = pulumi.interpolate`${outputInstance}`
+const outputInstance: pulumi.OutputInstance<number> = pulumi.output([
+  1, 2, 3,
+])[0];
+const someInterpolatedString = pulumi.interpolate`${outputInstance}`;
 ```
 
 ## Contributing
 
-Adding a rule is meant to be as simple as possible. For any check we want to make, it's likely best to build a simple example in [AST Explorer](https://astexplorer.net/) first. Then, determine the rules governing the node which breaks the rule we want to implement. From that point, we can use the helper `ESLintUtils.RuleCreator` to handle much of the boilerplate needed to build our new rule. Many of the patterns used from there are visible in the [`no-output-in-template-literal`](./src/noOuputInTemplateLiterals.ts#13) rule. From there, register the new rule in [index.ts](src/index.ts), and write a new test suite in [tests](tests/). See [example](tests/noOutputTemplateLiteral.spec.ts).
+Adding a rule is meant to be as simple as possible. For any check we want to make, it's likely best to build a simple example in [AST Explorer](https://astexplorer.net/) first. Then, determine the rules governing the node which breaks the rule we want to implement. From that point, we can use the helper `ESLintUtils.RuleCreator` to handle much of the boilerplate needed to build our new rule. Many of the patterns used from there are visible in the [`no-output-in-template-literal`](./src/noOuputInTemplateLiteral.ts#13) rule. From there, register the new rule in [index.ts](src/index.ts), and write a new test suite in [tests](tests/). See [example](tests/noOutputInTemplateLiteral.spec.ts).
