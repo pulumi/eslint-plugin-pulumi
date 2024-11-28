@@ -75,6 +75,30 @@ const outputInstance: pulumi.OutputInstance<number> = pulumi.output([
 const someInterpolatedString = pulumi.interpolate`${outputInstance}`;
 ```
 
+### no-input-in-template-literal
+
+This rule is very similar to `no-output-in-template-literal`, and is intended to prevent objects of type `pulumi.Input<T>` from appearing in template strings.
+
+Invalid:
+
+```typescript
+import * as pulumi from "@pulumi/pulumi";
+
+const output = pulumu.output("foo");
+const input: pulumi.Input<string> = output;
+const someInterpolatedString = `${input}`;
+```
+
+Valid:
+
+```typescript
+import * as pulumi from "@pulumi/pulumi";
+
+const output = pulumu.output("foo");
+const input: pulumi.Input<string> = output;
+const someInterpolatedString = pulumi.interpolate`${input}`;
+```
+
 ## Contributing
 
 Adding a rule is meant to be as simple as possible. For any check we want to make, it's likely best to build a simple example in [AST Explorer](https://astexplorer.net/) first. Then, determine the rules governing the node which breaks the rule we want to implement. From that point, we can use the helper `ESLintUtils.RuleCreator` to handle much of the boilerplate needed to build our new rule. Many of the patterns used from there are visible in the [`no-output-in-template-literal`](./src/noOuputInTemplateLiteral.ts#13) rule. From there, register the new rule in [index.ts](src/index.ts), and write a new test suite in [tests](tests/). See [example](tests/noOutputInTemplateLiteral.spec.ts).
