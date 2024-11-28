@@ -43,8 +43,10 @@ Invalid:
 ```typescript
 import * as pulumi from "@pulumi/pulumi";
 
-const outputInstance: pulumi.OutputInstance<number> = pulumi.output([1, 2, 3])[0];
-const someInterpolatedString = `${outputInstance}`
+const outputInstance: pulumi.OutputInstance<number> = pulumi.output([
+  1, 2, 3,
+])[0];
+const someInterpolatedString = `${outputInstance}`;
 ```
 
 Valid:
@@ -52,8 +54,34 @@ Valid:
 ```typescript
 import * as pulumi from "@pulumi/pulumi";
 
-const outputInstance: pulumi.OutputInstance<number> = pulumi.output([1, 2, 3])[0];
-const someInterpolatedString = pulumi.interpolate`${outputInstance}`
+const outputInstance: pulumi.OutputInstance<number> = pulumi.output([
+  1, 2, 3,
+])[0];
+const someInterpolatedString = pulumi.interpolate`${outputInstance}`;
+```
+
+### no-input-in-template-literal
+
+This rule is very similar to `no-output-in-template-literal`, and is intended to prevent objects of type `pulumi.Input<T>` from appearing in template strings.
+
+Invalid:
+
+```typescript
+import * as pulumi from "@pulumi/pulumi";
+
+const output = pulumu.output("foo");
+const input: pulumi.Input<string> = output;
+const someInterpolatedString = `${input}`;
+```
+
+Valid:
+
+```typescript
+import * as pulumi from "@pulumi/pulumi";
+
+const output = pulumu.output("foo");
+const input: pulumi.Input<string> = output;
+const someInterpolatedString = pulumi.interpolate`${input}`;
 ```
 
 ## Contributing
