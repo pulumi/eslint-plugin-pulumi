@@ -1,8 +1,8 @@
 import {
-  TSESTree,
   ESLintUtils,
-  TSESLint,
   ParserServices,
+  TSESLint,
+  TSESTree,
 } from "@typescript-eslint/utils";
 import { TypeChecker } from "typescript";
 
@@ -14,10 +14,8 @@ export default ESLintUtils.RuleCreator((name) => name)<Options, MessageIds>({
   name: "no-output-in-template-literal",
   meta: {
     type: "problem",
-    hasSuggestions: true,
     fixable: "code",
     docs: {
-      recommended: "error",
       description: "",
     },
     messages: {
@@ -25,34 +23,20 @@ export default ESLintUtils.RuleCreator((name) => name)<Options, MessageIds>({
         "pulumi.Output<T> not permitted in template literals.",
       tagTemplateString: "Please tag this template with `pulumi.interpolate`",
     },
-    schema: {},
+    schema: [],
   },
   defaultOptions: [],
   create(context) {
     const parserServices = ESLintUtils.getParserServices(context);
     const typeChecker = parserServices.program.getTypeChecker();
-    const submitIssueReport = (
-      contextInput: typeof context,
-      node: TSESTree.Node
-    ) => {
-      contextInput.report({
+    const submitIssueReport = (node: TSESTree.Node) => {
+      context.report({
         node,
         messageId: "outputInTemplateLiteral",
-        suggest: [
-          {
-            messageId: "tagTemplateString",
-            fix(fixer): TSESLint.RuleFix {
-              return fixer.replaceText(
-                node,
-                `pulumi.interpolate${context.getSourceCode().getText(node)}`
-              );
-            },
-          },
-        ],
         fix(fixer): TSESLint.RuleFix {
           return fixer.replaceText(
             node,
-            `pulumi.interpolate${context.getSourceCode().getText(node)}`
+            `pulumi.interpolate${context.sourceCode.getText(node)}`,
           );
         },
       });
@@ -64,15 +48,16 @@ export default ESLintUtils.RuleCreator((name) => name)<Options, MessageIds>({
           node?.expressions &&
           node?.parent?.type !== "TaggedTemplateExpression"
         ) {
-          const outputExpressions = node.expressions
+          const hasOutputExpressions = node.expressions
             .map(
               (expression) =>
                 getNodeType(typeChecker, parserServices, expression).aliasSymbol
-                  ?.escapedName
+                  ?.escapedName,
             )
-            .filter((type) => type === "Output");
-          if (outputExpressions.length !== 0) {
-            submitIssueReport(context, node);
+            .some((type) => type === "Output");
+
+          if (hasOutputExpressions) {
+            submitIssueReport(node);
           }
         }
       },
@@ -83,5 +68,5 @@ export default ESLintUtils.RuleCreator((name) => name)<Options, MessageIds>({
 const getNodeType = (
   checker: TypeChecker,
   services: ParserServices,
-  node: TSESTree.Node
+  node: TSESTree.Node,
 ) => checker.getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node));

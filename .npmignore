@@ -7,5 +7,5 @@ tests
 jest*
 scripts
 Makefile
-.eslint*
+eslint*
 .prettierrc
