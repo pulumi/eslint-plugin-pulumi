@@ -6,6 +6,21 @@ A simple eslint plugin for the Pulumi Node SDK.
 
 Because Pulumi generates several nontrivial types, and those types often have some nontrivial semantics backing them, it can be the case where some idioms have been implemented to help prevent footgunning. Rather than allowing those footguns to occur, it seems better to point them out and (where possible) offer helpful advice to prevent them as early as possible. Thankfully, ESLint and TypeScript offer a very early escape hatch for this sort of thing, and so this plugin was born.
 
+## Installation
+
+Install this plugin by simply importing it and adding it to your `eslint.config.*` file:
+
+```
+import pulumi from '@pulumi/eslint-plugin'
+
+export default [
+  {
+    plugins: pulumi,
+  },
+  ...
+]
+```
+
 ## Examples
 
 ### no-output-in-template-literal
