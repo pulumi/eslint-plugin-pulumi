@@ -35,7 +35,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: 16.x
+          node-version: 24.x
           registry-url: https://registry.npmjs.org
           cache: yarn
           cache-dependency-path: '**/package.json'
@@ -83,7 +83,7 @@ jobs:
       fail-fast: false
       matrix:
         nodeversion:
-          - 16.x
+          - 24.x
   publish:
     name: publish
     needs: acceptance-test
@@ -119,4 +119,4 @@ jobs:
       fail-fast: false
       matrix:
         nodeversion:
-          - 16.x
+          - 24.x
