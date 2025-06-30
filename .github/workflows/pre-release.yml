@@ -18,17 +18,12 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-      - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
-        with:
-          path: ci-scripts
-          repository: pulumi/scripts
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: 16.x
+          node-version: 24.x
           registry-url: https://registry.npmjs.org
           cache: yarn
           cache-dependency-path: '**/package.json'
@@ -36,8 +31,6 @@ jobs:
         run: npm ci
       - name: Lint code
         run: make lint
-      - name: Check worktree clean
-        run: ./ci-scripts/ci/check-worktree-is-clean
   acceptance-test:
     needs: lint
     runs-on: ubuntu-latest
@@ -49,6 +42,7 @@ jobs:
         with:
           path: ci-scripts
           repository: pulumi/scripts
+      - run: echo "ci-scripts" >> .git/info/exclude # actions/checkout#197
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Setup Node
@@ -79,7 +73,7 @@ jobs:
       fail-fast: false
       matrix:
         nodeversion:
-          - 16.x
+          - 24.x
   publish_plugin:
     name: publish_plugin
     needs: acceptance-test
@@ -87,11 +81,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-      - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
-        with:
-          path: ci-scripts
-          repository: pulumi/scripts
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Setup Node
@@ -115,4 +104,4 @@ jobs:
       fail-fast: false
       matrix:
         nodeversion:
-          - 16.x
+          - 24.x
