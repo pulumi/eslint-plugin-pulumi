@@ -77,7 +77,7 @@ const someInterpolatedString = pulumi.interpolate`${outputInstance}`;
 
 ### no-input-in-template-literal
 
-This rule is very similar to `no-output-in-template-literal`, and is intended to prevent objects of type `pulumi.Input<T>` from appearing in template strings.
+Simmilar `no-output-in-template-literal`, this rule guards against using  objects of type `pulumi.Input<T>` from appearing in template strings. (Since `pulumi.Input<T>` can wrap `pulumi.Output<T>` and thus encounter the same error unless you use `pulumi.interpolate`.) 
 
 Invalid:
 
