@@ -1,16 +1,18 @@
-import { ESLintUtils } from "@typescript-eslint/utils";
+import typescriptEslintParser from "@typescript-eslint/parser";
+import { RuleTester } from "@typescript-eslint/rule-tester";
 import rule from "../src/noInputInTemplateLiteral";
 import { getFixturesRootDir } from "./utils";
 
+
 const rootDir = getFixturesRootDir();
 
-const ruleTester = new ESLintUtils.RuleTester({
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: "module",
-    tsconfigRootDir: rootDir,
-    project: "./tsconfig.json",
+const ruleTester = new RuleTester({
+  languageOptions: {
+    parser: typescriptEslintParser,
+    parserOptions: {
+      tsconfigRootDir: rootDir,
+      project: true,
+    },
   },
 });
 
