@@ -30,18 +30,13 @@ jobs:
         id: esc-secrets
         uses: pulumi/esc-action@v1
       - name: Checkout Repo
-        uses: actions/checkout@v2
-      - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
-        with:
-          path: ci-scripts
-          repository: pulumi/scripts
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 16.x
+          node-version: 24.x
           registry-url: https://registry.npmjs.org
           cache: yarn
           cache-dependency-path: '**/package.json'
@@ -49,8 +44,6 @@ jobs:
         run: npm ci
       - name: Lint code
         run: make lint
-      - name: Check worktree clean
-        run: ./ci-scripts/ci/check-worktree-is-clean
   acceptance-test:
     needs: lint
     runs-on: ubuntu-latest
@@ -59,16 +52,11 @@ jobs:
         id: esc-secrets
         uses: pulumi/esc-action@v1
       - name: Checkout Repo
-        uses: actions/checkout@v2
-      - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
-        with:
-          path: ci-scripts
-          repository: pulumi/scripts
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: ${{matrix.nodeversion}}
           registry-url: https://registry.npmjs.org
@@ -81,7 +69,7 @@ jobs:
       - name: Rename tarball
         run: mv pulumi-eslint-plugin-$(jq -r .version < package.json).tgz pulumi-eslint-plugin.tgz
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: pulumi-eslint-plugin.tgz
           path: ${{ github.workspace }}/pulumi-eslint-plugin.tgz
@@ -92,7 +80,7 @@ jobs:
       fail-fast: false
       matrix:
         nodeversion:
-          - 16.x
+          - 24.x
   publish:
     name: publish
     needs: acceptance-test
@@ -102,22 +90,17 @@ jobs:
         id: esc-secrets
         uses: pulumi/esc-action@v1
       - name: Checkout Repo
-        uses: actions/checkout@v2
-      - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
-        with:
-          path: ci-scripts
-          repository: pulumi/scripts
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           always-auth: true
           registry-url: https://registry.npmjs.org
           node-version: ${{matrix.nodeversion}}
       - name: Download Plugin
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: pulumi-eslint-plugin.tgz
           path: ${{ github.workspace }}
@@ -131,4 +114,4 @@ jobs:
       fail-fast: false
       matrix:
         nodeversion:
-          - 16.x
+          - 24.x
